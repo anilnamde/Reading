@@ -1,0 +1,191 @@
+Hour 1
+==========
+Who
+date
+Who am i
+
+
+Simple Command
+	Command
+
+Compex Command
+	Command arg1 arg2 ... 
+
+Compound Command
+	Command1; Command2; ... CommandN;
+	// ; : command separator 
+
+Shell:
+	Accepts inputs and processes it also it has the programming capabilities conditional statement, loops etc
+	If we enter more than one world then "word1 word2 word3 ... wordN" shell treats first as command and others as arguments
+Types Shell
+	= Bourn Shell - $ - ksh sh bash (bin/sh)
+		- ALGOL style syntax
+		- no command history
+		- no file name auto completion
+		- difficulty in executing multiple background processes
+	= C shell - % - csh tcsh (bin/csh new /bin/tcsh http://www.primate.wisc.edu/software/csh-tcsh-book/)
+		+ c style syntax
+		+ history
+		+ auto compete file name
+		+ job control
+		+ aliases 
+		- lacking functions
+	= Kourn shell (Cshell + Bourn shell)
+		+ function support
+		+ arithmatic support
+	= Bash Bourn Again Shell
+		installs as /bin/bash
+		+ standardised portable
+	[For root user prompts become # so be careful]
+	
+
+Hour 2
+=======
+Kernel
+Command - Propgram with arguments
+Utility - Simple commands
+
+Shell Lifecycle
+	- Login - /etc/passwd for password entry
+	- Initializeation read profiles
+		- etc/profile file : File maintain by sys adming for all users 
+		- or .profile file : In users control
+	- Dispaly propmpt
+
+Shell Execution
+	- Interaction - command - exec - command mode
+		- start using /bin/sh comamnd
+		- exit to stop
+	- noninteractive - When shell accepts programm runs and when done exits
+		- /bin/sh filename [file name set of command to execute ex: date; who am i;]
+
+Initialization File Content
+	- should be small to setup complete working environment
+	- /etc/profile  maintained by sys admin
+	- .profile  under user control do as much as u want in here
+	- Things to set
+		- type of terminal
+		- list of directories to locate command
+
+Setting Terminal Type
+	TERM=vt100
+
+Setting PATH
+	- PATH=/bin:/usr/bin NOTE: separated by :
+	- path to look for a command
+	- if we type on command prompt and its not found such message is printed on the console
+
+Setting the MANPATH
+	- settting path for man page help
+	- ex: MANPATH=/usr/man:/usr/share/man
+	- ex command: man who t
+
+Making a Shell Script Executable
+	- make file executatble (chmod a+x ./logins)
+	- make sure right shell is used
+
+	- ex:
+		#!/bin/sh
+		date ; who ;
+
+Comments
+	# anything after this is comment
+
+Getting Help:
+	- man command
+
+Hour 3 
+======== 
+Working with files
+	- simple file : 
+	- directory files
+	- special files: like devices etc
+
+Listing file
+	- ls comand
+	- ls -F :  to find which are dir and files
+	- ls -1 : to print output in one line
+	- ls -a : to list all hidden file directories
+
+Options Grouping
+	- ls -aF : to list hidden files and show types
+	- order of flags do not matter
+
+Viewing content of file
+	- Cat file(s) : to list the content of file
+	- cat -n file1 file2 : -n list number in file lines
+	- cat -b file : -b to skip numbering blank lines
+
+Counting Word:
+	- wc [option] files : provides summary of lines words characters
+	- ex : wc file
+		[lines no] [words no] [charcters no]   [file name]
+	- ex : wc .rhosts .profile
+		7 14 179 .rhosts
+		133 405 2908 .profile
+		140 419 3087 total
+	- options 
+		- l : lines
+		- w : words
+		- c or m : characters
+Manipulating Files:
+	= Copy : cp sourceFile destinationFile
+		- if destinationFile exists it gets overriden automatically
+		- cp -i source dest : - interactive mode it ask if u like to override or not
+		- $ cp test_results work/: copies test_results in work
+		-  $ cp res.01 res.02 res.03 work/: copies multiple files to work. Only works in destination if directory
+	= Rename
+		- mv source dest
+		- silently overrides destination files
+		- i : has interactive mode
+	= Removing files
+		- rm file(s) - remvoe one or more file
+		- rm res.01 res.02 
+		- common error -attempt to remove directory, file not exist
+		- rm -i hw1 hw2 hw3 : interactive mode
+		- rm res.01 res.02 res.03 if file res.02  does not exist rest two are still removed
+
+
+
+Hour 4
+=======
+Working with directories
+- Absolute path cannot exceep 1024 old ways 
+- file name can have a-z 0-9 _ . - 
+- unix file name are case sensitive
+- pwd : command print working directory
+- . current dir .. parent directory
+Home directory
+	- cd  :if issued without argument set set home directory as current on then type pwd to see path
+Change Directory
+	- cd dirnamepath
+Listing Files & Directories
+	- ls dir : dir directory whose content we want to see
+	- ls /home /usr/local :  you can specify more than one dir
+	- list filename : only show one file
+	- $ ls .profile docs/ /usr/local /bin/sh : mix match is allowed
+	- ls -d /home/ranga: -d to force see only name of dir no t the content
+Manupulating Directory
+	- mkdir docs pub : creat more than one directories
+	- mkdir /tmp/ch04/test1 : create effor if any sub directory does not exists
+	- mkdir -p /tmp/ch04/test1 : create all the listed tree of directories
+Copy Directory
+	- cp -r source dest : copy directory recursiverly copies source under dest directory
+	- $ cp -r docs/book docs/school work/src /mnt/zip : copies all list to last directory
+	- $ cp -r .profile docs/book .kshrc doc/names work/src /mnt/jaz : mix of file and directory if fine
+Move Directory:
+	- mv source destination
+	- $ mv /home/ranga/names /tmp : moves file names to directory tmp
+	- mv docs/names /tmp/names.txt : move and rename in one command is allowed
+	- mv work/ docs/ .profile pub/ : move mu
+	- mv /tmp/ch01 /home/ranga/docs : moving file from one file system to other does not work. in such case u need to copy first and then remove it
+Removing directory
+	- rmdir
+	- rm -rf : removes everything
+	- rmdir ch01 ch02 ch03 multiple dir : removes only empty directory
+	- ls -A bar : to check if directory is empty or not
+
+
+Hour 5
+=======
