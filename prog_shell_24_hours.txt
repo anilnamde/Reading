@@ -189,3 +189,45 @@ Removing directory
 
 Hour 5
 =======
+Manipulating File Attributes
+- Manipulating Permission, Ownners, Group
+
+Different Types of file in Unix and how to identify them
+	- ls -l : list details of file
+	- -rwxr-xr-x : first - indicates its notrma file following are other symbol and meaning
+		- Regular file
+		l Symbolic link
+		c Character special
+		b Block special
+		p Named pipe
+		s Socket
+		d Directory file
+	- file fileName: programe hellps to analyse and print information of file
+
+Rugular file: can store text or binary data
+Symbolic Links:
+	- its like shortcut and 
+	- many links can point to same fiel/directory
+	- ls -l : to list link
+	- ln -s source destination : to create link
+	- ln -s /home/httpd/html/users/ranga /home/ranga/public_html : you can use relative or absolute path
+	- catch ln -s /home/ftp/pub/ranga pub: if pub directory is in current path then ranga link is created under pub directory
+Devices files:
+	- files access points to devices coneected PC
+	- located under /dev 
+	- Two tyeps of device file
+		- Block special file
+			> can send large chunk of data
+			> brw------- : starts with b
+			> also has minor and major numbers
+		- Character special file
+			> communicates to devices one char at time
+			> ls -l : crw------- : starts with c
+			> apart from that it shows minor and major number which indicates device driver to be used
+Names piples file:
+	- acommand | bcommand
+	- simple are anynimouse pipe but when more control needed named piple can be created
+	- this helps tro precess communicate each other IPC its popular way of ipc in unix
+	- p----- : p indicates named pipe
+Socket files:
+	- 
