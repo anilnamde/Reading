@@ -230,4 +230,52 @@ Names piples file:
 	- this helps tro precess communicate each other IPC its popular way of ipc in unix
 	- p----- : p indicates named pipe
 Socket files:
-	- 
+	- Socket can pass data and info betwenn process running of two diff machines 
+	- Socket is created with communication with other process on newtowrk is required
+	- Web browser uses sockets to communicate to web server
+
+Owners, Group, Permissions
+	- Files have permission Owners, Group and Others
+	- Permision on to each section read, write and execute
+	- ls -l : display permission on the file
+	- permissons -rwxrwxrwx [filetytpe|owner read write execute| group read write execute | other read write execute]
+	- ls -l : output -rwxr-xr-x   1 ranga    users        2368 Jul 11 15:57 .profile*
+		Here user is ranga and group is users
+	- Directory also has permission and its equally important
+
+
+SUID and SGID File Permission
+	- additional permission can be given to files with Set User ID Set Group ID bit
+	- whe SUID bit set executed file you inherit permission of owner if not then user who executed file his permission are used
+	- Same goes for SGID
+	- SUID and SGID bits will appear as the letter "s" [-r-sr-xr-x] S capital S means executatble bit not set
+	-  SUID bit or stick bit
+
+Changing permission:
+	- chmod expression files
+		- expression can be Symbolic or Octal
+		- Symbolic method syntax 
+			(who)(action)(permissions
+			- who -> u Owner - g group - a all - o others
+			- action -> + add permission - remove permissin = explicitly set file permission
+			- permission -> r read, w write, x execute, s SUID or SGID
+			ex:
+				- chmod a=r * Or chmod guo=r * : read permissinn to all files in folder
+				- chmod go-w .profile : only owner to have write permission
+				- cd ; chmod go= * OR cd ; chmod go-rwx * : to remove permisson on all files in home dir for others
+				- NOTE: order in which permissio or user appers is irrelavent
+				- chmod go-w,a+x a.out : to set more than one permission use , 
+				- cd ; chmod ug+s . : to set SUID SGID bits home dir
+				- chmod -R o+r pub : -R recursive change permission for all files
+		- Octal Method:
+			- uses numbr to set permission to three categories
+			- 4 - 100 - Read / 2 - 010 - Write / 1 - 001 - Execute
+			- SGID SUID as first number in group of 4 [XXXX - SUID/Owner/Grop/Others]
+			ex:
+				- chmod 0444 * : read to all
+				- chmod 0600 .profile : read write to Owner
+				- GOTCHA:  (Main difference between Octal Symbol mehtod)
+					- Octal one used reset permission for all the users
+					- While in Symbole we can do "chmod u+rw file" this just modify it for owner not modify permission for others and group
+Change Owner and Group
+
