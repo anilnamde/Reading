@@ -278,4 +278,17 @@ Changing permission:
 					- Octal one used reset permission for all the users
 					- While in Symbole we can do "chmod u+rw file" this just modify it for owner not modify permission for others and group
 Change Owner and Group
+	- chown and chgrp: 
+	- chown
+		chown options user:group files
+		- options - check man :P
+		- user - could be user id or user name
+		- group - group id or name : to just change owner you can ignore group value
+		- chown ranga: /home/httpd/html/users/ranga : change owner to ranga
+		- chown -R ranga: /home/httpd/html/users/ranga : recirsovely change 
+	- chgrp:
+		chgrp options group files
+		- chgrp authors /home/ranga/docs/ch5.doc: chnage group to authors
+		- chown :authors /home/ranga/docs/ch5.doc: same can be achived with chown if chgrp is not available
+
 
