@@ -291,4 +291,13 @@ Change Owner and Group
 		- chgrp authors /home/ranga/docs/ch5.doc: chnage group to authors
 		- chown :authors /home/ranga/docs/ch5.doc: same can be achived with chown if chgrp is not available
 
-
+HOUR 6
+========
+Starting Process
+	- ps list process
+	- pid is unique 16 bin singed number
+	- Foregroupd
+		- any command runs in foreground
+	- Background 
+		- 
+		- ls ch0*.doc &
