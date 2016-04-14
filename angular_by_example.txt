@@ -1,0 +1,102 @@
+Getting Started 1
+==================
+ - MVC
+ - Setting dev server
+    - browser has restiction no running scripts from local file system hence need to start server
+    npm install http-server –g 
+    http-server
+    - Or can use pythons SimpleHTTPServer or Mongoose
+ - Build Guess Number Game
+    - [enter guess] {verify btn} {refresh}
+    - Traditional approach: first UI, then data, then behaviour developed and they are tighly couple less ideal situation
+    - MVC: first find Model, Build UI, then add behaviour in controller. Consious efforts to bulild model first
+        - App Model - MVC Hence find model first
+            - random number gererator
+            - input user guess
+            - track guess made 
+            - hints
+            - success if guess right
+        - View: model is used in view
+        - Controller : model need to refernce by view hence it will be in Controller
+
+    - First build page
+         <!DOCTYPE html>
+           <html>
+           <head>
+             <title>Guess The Number !</title>
+             <link href="http://netdna.bootstrapcdn.com/bootstrap/
+               3.1.1/css/bootstrap.min.css" rel="stylesheet">
+           </head>
+           <body>
+             <script src="http://ajax.googleapis.com/
+               ajax/libs/angularjs/1.3.3/angular.js"></script>
+           </body>
+        </html>
+    
+    - Controller
+        - its class hosts model exposes action to which view binds to
+        - $scope is black magic
+        function GuessTheNumberController($scope) {
+                //on each guess
+                $scope.verifyGuess = function () {
+                   $scope.deviation = $scope.original - $scope.guess;
+                   $scope.noOfTries = $scope.noOfTries + 1;
+                }
+                //when user press reset
+                $scope.initializeGame = function () {
+                   $scope.noOfTries = 0;
+                   $scope.original = Math.floor((Math.random() * 1000) + 1);
+                   $scope.guess = null;
+                   $scope.deviation = null;
+                }
+                $scope.initializeGame();
+        }
+    - View
+        step 1: 
+            - To let angular knwo to process HTML update <body ng-app="app">
+            - ng-app ensure to wrap all view in it as Angular app and process accordingly
+            - "app" value searches moduel and load it
+            [NOTE: moduule in anguler are containers which holds artifacts created or existing in framework]
+        step 2:
+            - create module
+                - Use this in script where we have declared controller
+                - Here we have module app, its linked with view using ng-app. So angular can load view
+
+               angular.module('app',[]) // declare module app and  [] can contain its dependancies
+               function GuessTheNumberController($scope) {...} //controller
+               
+               - To enable Angular module to be link to controller use .controller() method
+                    angular.module('app',[])
+                    .controller('GuessTheNumberController', GuessTheNumberController);  // Linking controller to app
+                    function GuessTheNumberController($scope) {
+        step 3: link controller to view 
+          - <div class="container" ng-controller="GuessTheNumberController">
+
+        - {{noOfTries}}: 
+        - ng-click :
+        - ng-model :
+        - ng-show :  
+
+        <div class="container">
+             <h2>Guess the Number !</h2>
+             <p class="well lead">Guess the computer generated random number
+               between 1 and 1000.</p>
+             <label>Your Guess: </label><input type="number"
+        ng-model="guess"/>
+        <button ng-click="verifyGuess()" class="btn btn-primary
+        btn-sm">Verify</button>
+        <button ng-click="initializeGame()" class=
+               "btn btn-warning btn-sm">Restart</button>
+             <p>
+        <p ng-show="deviation<0" class="alert alert-warning">Your guess is higher.</p>
+        <p ng-show="deviation>0" class="alert alert-warning">Your guess is lower.</p>
+        <p ng-show="deviation===0" class="alert alert-success">Yes! That"s it.</p>
+             </p>
+             <p class="text-info">No of guesses : <span
+               class="badge">{{noOfTries}}</span><p>
+           </div>
+    - Summary:
+      - in angular ng-* is directive {{}} is interpolation symbol
+      - interpolation are flexible and can be property value, name or value in element
+  - Directives:
+    
