@@ -299,5 +299,381 @@ Starting Process
 	- Foregroupd
 		- any command runs in foreground
 	- Background 
+		- add & at end of the command to run it in background
+		- ex: ls ch0*.doc & : first line shows [1] 37788 its job number and process id
+		- if cmd need input it stops wait till its again moved to foreground
+		- NOTE: if process id completion of bg task is not shown it might be turned off on shell 
+			- To start it 'set +o monitor'
+			- To stop it 'set -o monitor'
+			- To see all shell option 'set -o'
+Moving process from Foreground to Background (bg)
+	- ex $:long_running_process
+	- press Ctrl+Z
+	- You are told the job number ( 1) and that the process is Stopped
+	- You then get a prompt. To resume the job in the background, you enter the bg 
+	- ex: bg
+	- ex:
+	- $ long_running_process
+		^Z[1] + Stopped (SIGTSTP)        long_running_process
+	$ long_running_process2
+		^Z[2] + Stopped (SIGTSTP)        long_running_process2
+	- To move the first one to the background, I use the following:
+		$ bg %1
+		[1]     long_running_process &
+	- The second process is still suspended and can be moved to the background as follows:
+		$ bg %2
+		[2]     long_running_process2 &
+
+Moving a Background Process to the Foreground ( fg Command)
+	- first longs running process moved to background 
+	$ long_running_process
+		^Z[1] + Stopped (SIGTSTP)
+	$ bg
+		[1]     long_running_process &
+	- You can move it back to the foreground as follows:
+	$ fg %1
+		long_running_process
+
+Keeping background process around  (nohup)
+	- If you want to not temrinate process 
+	- its output is redirected to file by default
+	$ nohup [command to run in backgournd] &
+	$ nohup ls &
+
+Waiting for Background Processes to Finish ( wait Command)
+	- two ways 
+	- two ways to wait for a background process to finish
+	- or wait command
+	- three ways to use the wait (without arg, with process ID or with job number prefixed with % sign)
+		- wait without arg waits for all bg tasks to finish
+		- wait %1 
+
+Listing Running Processes
+	- Jobs command
+		- Jobs show you processes suspended and in background
+		- Its foreground command hence does not show forground tasks
+		- ex:
+		$ jobs
+			[3] +  Running            first_one &
+			[2] - Stopped (SIGTSTP)   second_one
+			[1]   Stopped (SIGTTIN)   third_one &
+	- ps command
+		- shows all processes
+		ex: ps
+		- $ ps -f [full option]
+			UID   PID  PPID  C    STIME TTY     TIME CMD
+			dhorvath 6738  3662  0 10:23:03 pts/6   0:00 first_one
+		- -e ( e for every)
+		- -u ( u for user)
+		- -a : show information of all user
+		- -x : show information about process without terminal
+
+Killing a Process ( kill Command)
+	- kill %1
+	- kill [pid]
+	- if process ignores kill TERM signal use "kill -9" or "kill -KILL" followed by the process ID or job number
+
+Job ID Versus Process ID: 
+	- are different
+Subshells:
+	- if you start shell from shell it creats subshell
+Process Permissions:
+
+Overlaying the Current Process ( exec Command):
+
+
+Hour 7: Variables
+Variables:
+	- Define Variable
+		- name=value
+		- ex: FRUIT=peach
+	- Variable Naming
+		- can contain a-z A-Z 0-9 _
+		- should not start with number 
+	- Variable Values
+		- can be anything
+		- carefull with space in between
+			ex:$ FRUIT=apple orange plum (resutls in sh: orange:  not found.)
+			try ex:
+				$ FRUIT="apple orange plum"
+				$ FRUIT='apple orange plum'
+	- Accessing Variables
+		- ex $ echo $FRUIT (prefix the name with $)
+		- if you miss $ then FRUIT is printed
+		- IMP $ only used to access variable not to define it
+			- ex $ $FRUIT=apple (this throws error)
+		- When $ used with variable the value is substituted
+Arrays
+	- Array Variable
+		- Simpe way to create Array is to assign value to index
+			name[index]=value
+		- ex:
+			$ FRUIT[0]=apple
+			$ FRUIT[1]=banana
+			$ FRUIT[2]=orange
+			$ FRUIT[10]=plum
+		- shell does not fill in empty spaces in array it keeps track only of filled element
+		- ex: if array name assign scaller value and then value to index [0] element becode value "apple" 
+			$ FRUIT=apple
+			$ FRUIT[1]=peach
+		- Intiatialization:
+			- syn: set -A name value1 value2 ... valuen
+			- syn: name=(value1 ... valuen)
+	- Accessing Array Value
+		- syn: ${name[index]}
+		- ex: $ echo ${FRUIT[2]}
+		- To real all items
+			- ${name[*]}  : to print all items does not work for the items with spaces
+			- ${name[@]}  : to print all items even with spaces
+
+Read-only Variables
+	- readonly command to make variable readonly
+	- ex :
+		$ FRUIT=kiwi
+		$ readonly FRUIT
+		$ FRUIT=message
+Unset variables
+	- unset
+	- works both on scaller and vector
+		ex: unset FRUIT
+			unset ARR[8]
+	- cannot reset readonly
+Environment Variables
+	- three types
+		- Local Variables: variable preset in current instance of shell. They are not availble to programm started by the shell. All prev are local variabels
+		- Environment Variables: Variable available to child process of the shell.
+		- Shell Vairable: Variable set by shell and needed by shell to function correctly
+
+			Attributes 		local 		Environment 	Shell
+			Accessible by 	 No			Yes             Yes child processes
+			Set by users     Yes        Yes             No
+			Set by the shell No         No              Yes
+			User modifiable  Yes        Yes             No
+			Required by the  No         No              Yes shell
+
+Exporting Environment Variables
+	- you can place variable in evnvironment by exporting them
+	- syn: name=value ; export name
+	- ex:
+		PATH=/sbin:/bin ; export PATH
+	- ex: can export more than one variable
+		export PATH HOME UID
+	- Exporting in bash ksh ex:
+		export name=value
+	- Can export more than one variables
+		ex: export FMHOME=/usr/frame CLEARHOME=/usr/atria PATH
+
+Shell Variables:
+	- Variables that shell set during intialization. User can modify these values
+	- All above are Environment and Local are user variable as user sets them
+	- ex: PATH, HOME, PID, PWD
+
+Hour 8: Substitution
+	- When shell encounters $Var it does substitutions
+	- Apart from this following are the differnt types of substitution
+	1. File Name substituion (Globbing):
+		- shell expand string with wildcards into list of filenames
+			- *: 0 or more occurences
+				- ex:  ls *
+				- command prefix*
+				- command *suffix
+				- command prefix*suffix
+			- ?: single occ of character
+				- ex: ls ch0?.doc
+			- [matches] : occ of characters
+				- ls ch0[0123456789].doc
+				- ls ch0[0-9].doc
+				- ls [a-z]*
+				- ls *[a-zA-Z0-9]
+				- Netating set: command [!characters]
+				- ls [!a]*
+	- Substituntion
+		- Default Value: set when variable null or empty. world default value
+			${parameter:-word}
+		- ex:  PS1=${HOST:-localhost}"$ " ; export PS1 ;
+		- Assigning a Default Value: To set value of variable if param unset
+			- ${parameter:=word}
+				PS1=${HOST:= ́uname -n ́}"$ " ; export PS1 HOST ;
+		- Abort due to variable erors : it writes message when param is unset
+			- ${parameter:?message}
+				- ex ${HOME:?"Your home directory is undefined."}
+			- ${parameter:+word} : set param to word if word is set
+				- echo ${DEBUG:+"Debug is active."}
+
+	- Command and Arithmetic Substitution
+		- Command: Enable to capture output of one command and set it as input to other command
+			ex: 
+				DATE= ́date ́
+				USERS= ́who | wc -l ́
+				UP= ́date ; uptime ́
+				grep  ́id -un ́ /etc/passwd : to pass output of one to other
+		- Arithmatic: Enable to do simplle arithmatic operations
+			- with this for arithmatic other program not needed to execute expr OR bc
+			- $((expression))
+			- ex: foo=$(( ((5 + 3*2) - 4) / 2 ))
+
+Hour 9 : Quoting
+	- to prevent supress special characters * ? [ ] ' " \ $ ; & ( ) | ^ < > new-line space tab
+	- ex:
+		echo Hello; world (errro world is not a command)
+		echo Hello\; world : escape ; to make it work
+
+		echo You owe $1250 : $1 is special shell vairable
+		out: You own 250
+		fix it : echo You owe \$1250
+	- Backsplash: any special character followed by \ looses its special meaning
+	- Single Quote: anythin in single quote is just as if its escaped
+	- Doble Quote: 
+		It takes away meaning of all specail characters except,
+		● $ for parameter substitution.
+		● Backquotes for command substitution.
+		● \$ to enable literal dollar signs.
+		● \ ́ to enable literal backquotes.
+		● \" to enable embedded double quotes.
+		● \\ to enable embedded backslashes.
+		● All other \ characters are literal (not special).
+
+	- Usage
+		- Quoting to Access Filenames Containing Special Characters
+			- rm 'ch*'
+		- Quoting Regular Expression Wildcards
+			-  grep '[0-9][0-9]*$' report2 report7
+
+Hour 10: Flow Control (if switch)
+	- IF
+		- Syntax
+			if list1 
+			then
+				list2 
+			elif list3
+			then
+				list4
+			else
+				list5
+			fi
+		- Shell consider if as list so it can be written in one line
+			- ex if list1 ; then list2 ; elif list3 ; then list4 ; else list5 ; fi ;
+		ex: 
+			NOTE: ; before then
+			if uuencode koala.gif koala.gif > koala.uu ; then
+			   echo "Encoded koala.gif to koala.uu"
+			else
+			   echo "Error encoding koala.gif"
+			fi
+
+		- test [extpression] Command:
+			- conidtion for if and elif is actually test command
+			- ex: test expression
+			- test [expression]
+			Here expression can be one of follwoing
+			- File test 
+				- Syntax:
+					test option file
+					[option file]
+				Options are 
+				Option 		   Description
+					-b file    True if file exists and is a block special file.
+					-c file    True if file exists and is a character special file.
+					-d file    True if file exists and is a directory.
+					-e file    True if file exists.
+					-f file    True if file exists and is a regular file.
+					-g file    True if file exists and has its SGID bit set.
+					-h file    True if file exists and is a symbolic link.
+					-k file    True if file exists and has its "sticky" bit set.
+					-p file    True if file exists and is a named pipe.
+					-r file    True if file exists and is readable.
+					-s file    True if file exists and has a size greater than zero.
+					-u file    True if file exists and has its SUID bit set.
+					-w file    True if file exists and is writable.
+					-x file    True if file exists and is executable.
+					-O file    True if file exists and is owned by the effective user ID.
+			- String comparison
+				-z string        True if string has zero length.
+				-n string       True if string has nonzero length.
+				string1 = string2       True if the strings are equal.
+				string1 != string2       True if the strings are not equal.
+				ex:
+					NOTE: double quote to expression
+					if [ -z "$FRUIT_BASKET" ] ; then
+					    echo "Your fruit basket is empty" ;
+					else
+					    echo "Your fruit basket has the following fruit: $FRUIT_BASKET"
+					fi
+
+				ex:
+					if [ -n "$FRUIT_BASKET" ] ; then
+					    echo "Your fruit basket has the following fruit: $FRUIT_BASKET"
+					else
+					    echo "Your fruit basket is empty" ;
+					fi
+
+				ex:
+					A simple example of using string comparisons is the following:
+					if [ "$FRUIT" = apple ] ; then
+					    echo "An apple a day keeps the doctor away."
+					else
+					    echo "You must like doctors, your fruit $FRUIT is not an apple."
+					fi
+
+				ex:
+					if [ "$FRUIT" != apple ] ; then
+					    echo "You must like doctors, your fruit $FRUIT is not an apple."
+					else
+					    echo "An apple a day keeps the doctor away."
+					fi
+
+			- Numeric comparison
+				Syn: test int1 operator int2
+				Syn: [ int1 operator int2 ]
+
+				- when command executes 0 is success non zero is error
+				ex: 
+					if [ $? -eq 0 ] ; then
+    					echo "Command was successful." ;
+    				else
+					    echo "An error was encountered."
+					    exit
+					fi
+				- Operators
+					Description
+					int1 -eq int2
+					int1 -ne int2
+					int1 -lt int2
+					int1 -le int2
+					int1 -gt int2
+					int1 -ge int2
+				- Logical operator 
+					! expr
+						ex: $ if [ ! -d $HOME/bin ] ; then mkdir $HOME/bin ; fi
+					expr1 -a expr2
+					expr1 -o expr2
+				- $$ || short circiting operators in expression
+					ex: $ test ! -d $HOME/bin && mkdir $HOME/bin
+					ex: if [ -z "$DTHOME" ] && [ -d /usr/dt ] ; then DTHOME=/usr/dt ; fi
+
+	- Case statement
 		- 
-		- ls ch0*.doc &
+			case word in 
+				pattern1)
+					list1
+					;; 
+				pattern2)
+					list2
+					;; 
+			esac
+		- ex:
+			FRUIT=kiwi
+			case "$FRUIT" in
+			  apple) echo "Apple pie is quite tasty." ;;
+			banana) echo "I like banana nut bread." ;;
+			    kiwi) echo "New Zealand is famous for kiwi." ;;
+			esac
+		- With case can do pattern matching
+			case "$TERM" in
+			      *term)
+			           TERM=xterm ;;
+			      network|dialup|unknown|vt[0-9][0-9][0-9])
+			  TERM=vt100 ;;
+			esac
+
+Hour 11: Loops
