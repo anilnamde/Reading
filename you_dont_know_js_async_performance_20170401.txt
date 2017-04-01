@@ -58,3 +58,128 @@ Run-to-Completion:
 Concurrency (task level):
     Concurrency is when two or more "processes" are executing simultaneously
     ex: load more data as user scrolls down so two process/task 
+    Single-threaded event loop is one expression of concurrency 
+    scroll and response come after each other not symultaniously event loop takes care of it 
+
+Noninteracting:
+    If more than one process/task don't (need)interact, nondeterminism is perfectly acceptable.
+
+Interaction:
+    When functions/tasks should coordinate to avoid race conditions
+
+    Ex A: to address race condidtion
+    var res = [];
+    function response(data) {
+        if (data.url == "http://some.url.1") {
+            res[0] = data; 
+        }
+        else if (data.url == "http://some.url.2") { 
+            res[1] = data;
+        } 
+    }
+    // ajax(..) is some arbitrary Ajax function given by a library
+    ajax( "http://some.url.1", response ); 
+    ajax( "http://some.url.2", response );
+
+    Ex B: Race condition scenario
+    //// Problem AJAX calls
+    var a, b;
+    function foo(x) { 
+        a = x * 2;
+        baz(); 
+    }
+    function bar(y) { 
+        b = y * 2;
+        baz(); 
+    }
+    function baz() { 
+        console.log(a + b);
+    }
+    // ajax(..) is some arbitrary Ajax function given by a library
+    ajax( "http://some.url.1", foo ); 
+    ajax( "http://some.url.2", bar );
+
+    //// To fix solutionis 
+    var a, b;
+    function foo(x) { a = x * 2;
+        if (a && b) { 
+            baz();
+        } 
+    }
+
+    Ex C: Race condition scenario
+    var a;
+    function foo(x) { a = x * 2; baz(); }
+    function bar(x) { a = x / 2; baz(); }
+    function baz() { console.log( a );}
+    // ajax(..) is some arbitrary Ajax function given by a library
+    ajax( "http://some.url.1", foo ); ajax( "http://some.url.2", bar );
+
+    //// Solution LATCH
+    var a;
+    function foo(x) { 
+        if (!a) {
+            a = x * 2;
+            baz(); 
+        }
+    }
+
+Cooperation:
+    Long running tasks
+    example : Ajax response handler that needs to run through a long list of results to transform the values. Scenario reads alot of values from server browser will get stuck user will not be able to do anything.
+
+    var res = [];
+    // `response(..)` receives array of results from the Ajax call 
+    function response(data) {
+        // add onto existing `res` array
+        res = res.concat(
+            // make a new transformed array with all `data` values doubled
+            data.map( function(val){ return val * 2;}) 
+        );
+    }
+    // ajax(..) is some arbitrary Ajax function given by a library
+    ajax( "http://some.url.1", response ); 
+    ajax( "http://some.url.2", response );
+
+    ///////// simple solution would be to split chunk of data at a time
+    var res = [];
+    // `response(..)` receives array of results from the Ajax call 
+    function response(data) {
+        // let's just do 1000 at a time
+        var chunk = data.splice( 0, 1000 );
+        // add onto existing `res` array
+        res = res.concat(
+            // make a new transformed array with all `chunk` values doubled
+            chunk.map( function(val){ return val * 2;}) 
+        );
+        if (data.length > 0) {
+            // async schedule next batch setTimeout( function(){
+            response( data ); }, 0 );
+        } 
+    }
+    // ajax(..) is some arbitrary Ajax function given by a library
+    ajax( "http://some.url.1", response ); 
+    ajax( "http://some.url.2", response );
+
+Jobs:
+    ES6 brings Job queue like promises
+    Whats diff between job queue and event loop: metaphor: the event loop queue is like an amusement park ride, where once you finish the ride, you have to go to the back of the line to ride again. But the Job queue is like finishing the ride, but then cutting in line and getting right back on.
+    So Job queue is like execute later, but as soon as possible.
+
+Statement Ordering:
+    Order in which we write code need not be same in which JS engine executes code
+    it's possible that the JS engine, after compiling this code and perform safe optimization
+
+Review:
+
+
+Chapter 2: Callbacks
+==============================================================
+
+
+
+
+
+
+
+
