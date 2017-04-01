@@ -1,0 +1,60 @@
+Chapter 1: Asynchrony: Now & Later
+===================================
+
+Asynchronous: 
+    chunck of code that executes later part in code. ex: callback
+
+Program as chunk:
+    chunk that executes now and chunk that executes later 
+
+    //later chunk
+    function calculateSome(){
+        some = some + 1;
+    }
+    //now chunk
+    function now(){
+        console.log(some)
+    }
+    now()
+    setTimeout(calculateSome, 1000)
+    now()
+
+Async Console: 
+    console API is async in nature and could cause strange output and browser or evironment need IO to print message which is slow hence execuation of console could be deffereed for some time. 
+    So in such events rely upon debugger or on printing JSON.strigify.
+
+Event Loop:
+    - JS does not have notian on Asynchrony till ES6
+    - JS engine runs inside a hosting environment browser or node
+    - Event Loop: mechanism to execute multiple chunks one at each time
+    - Once setTimeout is executed it puts code in event loop for execution
+
+    event loop example simplified pseudocode:
+    var eventLoop = [ ];
+    var event;
+    while (true) {
+        // perform a "tick"
+        if (eventLoop.length > 0) {
+            // get the next event in the queue
+            event = eventLoop.shift();
+            // now, execute the next event
+            try { 
+                event();
+            }
+            catch (err) {
+                reportError(err); 
+            }
+        }
+    } 
+
+Parallel Threading:
+    Its prorcess and treads and might execute symultaneously on different processors 
+    JS is single treaded environment
+    If function order changes and it uses comman data order could affect output. But code becomes non deterministic.
+
+Run-to-Completion:
+    If there are two function then they will race to complete. In JS its single threaded so first function if starts will complete and then second
+
+Concurrency (task level):
+    Concurrency is when two or more "processes" are executing simultaneously
+    ex: load more data as user scrolls down so two process/task 
