@@ -175,6 +175,19 @@ Review:
 
 Chapter 2: Callbacks
 ==============================================================
+    Callbacks are work horse of JavaScript but still there is need of cleaner absraction like promieses
+
+Continuations:
+    problem is that the moment callbacks come in picture code become difficult to react, understand and debug
+    ex:
+    // A
+    setTimeout( function(){ // C}, 1000 ); 
+    // B
+Sequential Brain:
+    It works like event loop while it focus on one thing at a time (excluding IMP funcition of respiration, breathing etc)
+Doing Versus Planning:
+
+
 
 
 
