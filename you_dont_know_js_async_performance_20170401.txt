@@ -184,8 +184,23 @@ Continuations:
     setTimeout( function(){ // C}, 1000 ); 
     // B
 Sequential Brain:
-    It works like event loop while it focus on one thing at a time (excluding IMP funcition of respiration, breathing etc)
+    It works like event loop while it focus on one thing at a time (excluding IMP funcition of respiration, breathing etc)  
 Doing Versus Planning:
+    Human brain works sequencially while planning and try solve one thing at a time. Problme with Asyn workflow is same as it hard to predict order in which it will execute.
+Nested/Chained Callbacks:
+    Callback hell is a problem.
+    listen( "click", function handler(evt){ 
+        setTimeout( function request(){
+            ajax( "http://some.url.1", function response(text){ 
+                if (text == "hello") {
+                    handler(); 
+                }
+                else if (text == "world") { 
+                    request();
+                } 
+            } );
+        }, 500) ; 
+    } )
 
 
 
