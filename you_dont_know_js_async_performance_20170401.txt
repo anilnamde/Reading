@@ -188,7 +188,9 @@ Sequential Brain:
 Doing Versus Planning:
     Human brain works sequencially while planning and try solve one thing at a time. Problme with Asyn workflow is same as it hard to predict order in which it will execute.
 Nested/Chained Callbacks:
-    Callback hell is a problem.
+    Callback hell is a problem. OR pyramid of doom. Such code is always difficult to understand as our brain try solve problems step by step aynch nature is just difficult to digest.
+
+    ex:
     listen( "click", function handler(evt){ 
         setTimeout( function request(){
             ajax( "http://some.url.1", function response(text){ 
@@ -202,6 +204,72 @@ Nested/Chained Callbacks:
         }, 500) ; 
     } )
 
+    Understanding aynch flow in code is always difficult
+    ex: 
+    doA( function(){ 
+        doB();
+        doC( function(){ 
+            doD();
+        })
+        doE(); 
+    } );
+
+    doF();
+
+    Order in which they called : doA() doF() doB() doC() doE() doD(). If doA(..) or doD(..) aren't actually async then order of execution changes to doA() doB() doC() doD() doE() doF()
+
+Trust Issues:
+    When asyn code is called its control returning depends on third party(which we dont have control on) server OR api. 
+    ex: order of code is codeA() codeB() ajax() as ajax() is async
+        //codeA()
+        ajax()
+        //codeB()
+
+Tale of Five Callbacks:
+    Relying on thrid party async api is difficult (story of analitics calling payment method 5 time). Might need us to add more latches scenarios
+
+Not Just Others' Code:
+    Can we trust our own code ? 
+    ex: add(a, b){
+        return a+b;
+    }
+
+    what if a is passes as string ? sure you would keep adding checks for this. With callback involve it grows multifold
+
+Trying to Save Callbacks:
+    API design methods to handel aynch fall gracefully 
+    1. split callbacks: 
+        ex: ajax(suc, err)
+    2. error-first style: 
+        ex: ajax((err, res)=>{
+                if(err){
+                    handleErr()
+                }else{
+                    doSomething(res)
+                }
+            })
+
+    ex:
+    function result(data) { 
+        console.log( a );
+    }
+    var a = 0;
+    ajax( "..pre-cached-url..", result ); 
+    a++;
+
+    What will be output here 0 Or 1. Thats unpredictable callback async code
+
+Review:
+
+    We need a generalized solution to all of the trust issues, one that can be reused for as many callbacks as we create without all the extra boilerplate overhead. More sophisticated and capable async patterns
+
+
+Chapter 3: Promises
+================================
+Callback philosophy is "here's what happens later, after the current step finishes."
+
+But what if we could uninvert that inversion of control? What if instead of handing the continuation of our program to another party, we could expect it to return us a capability to know when its task finishes, and then our code could decide what to do next?
+This paradigm is called Promises.
 
 
 
