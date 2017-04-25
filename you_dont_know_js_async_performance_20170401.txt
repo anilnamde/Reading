@@ -652,5 +652,139 @@ Chain Flow:
         console.log( response2 );
     } );
 
-55 page
+    Notes:
+        Commonly dev want to use promise enabled async code with utils which are not Promise aware like AJAX
+        Above example by returning promise request() we achieved it so response1 transferred to subsequent call
+        Above example not just multistep async sequence but also works as message queue 
+
+
+    ex: exception handling 
+    // step 1:
+    request( "http://some.url.1/" )
+    // step 2:
+    .then( function(response1){ 
+        foo.bar(); // undefined, error!
+        // never gets here
+        return request( "http://some.url.2/?v=" + response1 ); })
+    // step 3:
+    .then( function fulfilled(response2){
+        // never gets here
+    },
+    // rejection handler to catch the error function 
+    rejected(err){
+        console.log(err); // `TypeError` from `foo.bar()` error
+        return 42; 
+    })
+    // step 4:
+    .then( function(msg){ 
+        console.log( msg );
+    } )
+
+    NOtes: 
+    When the error occurs in step 2, the rejection handler in step 3 catches it.
+    The return value ( 42 in this snippet), if any, from that rejection handler fulfills the promise for the next step (4), such that the chain is now back in a fulfillment state
+    If then() only has fullfillment handler then in that case assumed (default) rejection handler is submitted . which again rethrows the exception and hence p2 rejection call back is called and so on.
+
+    ex: 
+    var p = new Promise( function(resolve,reject){ reject( "Oops" );
+    } );
+    var p2 = p.then( function fulfilled(){
+        // never gets here
+        }
+
+        // assumed rejection handler, if omitted or
+        // any other non-function value passed
+        // function(err) {
+        // throw err;
+        // }
+    )
+
+    - If a proper valid function is not passed as the fulfillment handler parameter to then(..) , there's also a default handler substituted: It passes values as is back 
+    - The then(null,function(err){ .. }) pattern -- only handling rejections (if any) but letting fulfillments pass through --
+    has a shortcut in the API: catch(function(err){ .. }) .
+    ex:
+    var p = Promise.resolve( 42 );
+
+    p.then(
+        // assumed fulfillment handler, if omitted or
+        // any other non-function value passed
+        // function(v) {
+        // return v;
+        // }
+    null,
+    function rejected(err){
+        // never gets here
+    } );
+
+    SUMMARY:
+    Let's review briefly the intrinsic behaviors of Promises that enable chaining flow control:
+    1. A then(..) call against one Promise automatically produces a new Promise to return from the call.
+    2. Inside the fulfillment/rejection handlers, if you return a value or an exception is thrown, the new returned (chainable) Promise is resolved accordingly.
+    3. If the fulfillment or rejection handler returns a Promise, it is unwrapped, so that whatever its resolution is will become the resolution of the chained Promise returned from the current then(..).
+
+    Certainly, the sequential expressiveness of the chain (this-then-this-then-this...) is a big improvement over the tangled mess of callbacks as we identified
+
+    But there's still a fair amount of boilerplate ( then(..) and function(){ .. } ).
+
+Terminology: Resolve, Fulfill, and Reject:
+    "resolve the Promise" to mean either fulfilling or rejecting the Promise.
+    ES6 specification uses onFulfilled(..) and onRejected(..) to label these two callbacks, so they are accurate terms.
+
+Error Handling:
+    Most common way to handle error in js is try catch but it does not help in Asynch workflow. As try cache is made for Synch code.
+    Now if we consider then() methods with callback it takes care of exception handling in a better way for aynch code.
+    ex:
+    var p = Promise.reject( "Oops" );
+    p.then(
+    function fulfilled(){
+        // never gets here
+    },
+    function rejected(err){
+        console.log( err ); // "Oops" }
+    );
+
+    On surface this kind of error handling looks great but if we take a closer look it has issues. If there is genune excepiton thrown by fulllilled callback(below ex) them rejected does not get executed (but it return new promise with status rejected as we know that its already a resolved promise and promise are immutable)
+    That is problem as if exception comes like these they quickly get swallowed and thats not really a good idea.
+    ex:
+    var p = Promise.reject( "Oops" );
+    p.then(
+    function fulfilled(){
+        // numbers don't have string functions, // so will throw an error
+        console.log( msg.toLowerCase() );
+    },
+    function rejected(err){
+        // never gets here
+    );
+
+    Warning: 
+    If you use the Promise API in an invalid way and an error occurs that prevents proper Promise construction, the result will be an immediately thrown exception, not a rejected Promise. new Promise(null) , Promise.all() , Promise.race(42) so on
+
+Pit of Despair:
+    - Promise error handling is unquestionably "pit of despair" by design. So any exception is swallowed by the Promise
+    - To avoid losing an error to the silence of a forgotten/discarded Promise, some developers have claimed that a "best practice" for Promise chains is to always end your chain with a final catch(..) , like:
+    ex:
+    var p = Promise.resolve( 42 );
+    p.then( function fulfilled(msg){
+        // numbers don't have string functions, 
+        // so will throw an error
+        console.log( msg.toLowerCase() );
+    } )
+    .catch( handleErrors );
+
+    So any excpeiton gets cought in handleErrors. Problem: what if handleErrors itself has exception
+Uncaught Handling:
+    One of solutions used by libraries is to use done(..) its last callback which does not return any promise again. And any exceptions in done is thrown at global level. Unfortunately done() is not part of ES6
+    ex:
+    var p = Promise.resolve( 42 );
+    p.then(
+    function fulfilled(msg){
+        // numbers don't have string functions, 
+        // so will throw an error
+        console.log( msg.toLowerCase() );
+    } )
+    .done( null, handleErrors );
+    // if `handleErrors(..)` caused its own exception, it would
+    // be thrown globally here
+
+.. page 62
 
