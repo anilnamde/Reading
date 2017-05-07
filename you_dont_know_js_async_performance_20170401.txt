@@ -786,5 +786,118 @@ Uncaught Handling:
     // if `handleErrors(..)` caused its own exception, it would
     // be thrown globally here
 
-.. page 62
+Pit of Success:
+    If a Promise is rejected, it defaults to noisily reporting that fact to the developer console (instead of defaulting to silence). You can opt out of that reporting either implicitly (by registering an error handler before rejection), or explicitly (with defer() ). In either case, you control the false positives.
+
+    This design is a pit of success. By default, all errors are either handled or reported -- what almost all developers in almost all cases would expect. You either have to register a handler or you have to intentionally opt out, and indicate you intend to defer error handling until later; you're opting for the extra responsibility in just that specific case.
+
+    ex:
+
+    var p = Promise.reject( "Oops" ).defer();
+    // `foo(..)` is Promise-aware
+    foo( 42 ) .then(
+    function fulfilled(){ return p;
+    },
+    function rejected(err){
+    // handle `foo(..)` error
+    } )
+
+
+Promise Patterns :
+    Patterns build as abstraction over promises. Makes code readable and maintainable.
+
+--Promise.all([ .. ]):
+    what about doing two or more steps concurrently.
+
+    > array of values passed into Promise.all([ .. ]) can include Promises, thenables, or even immediate values
+    > main promise returned from Promise.all([ .. ]) will only be fulfilled if and when all its constituent promises are fulfilled. 
+    > If any one of those promises instead is rejected, the main Promise.all([ .. ]) promise is immediately rejected
+    > always have rejection/error bloack in the promise 
+
+
+    ex:
+
+    var p1 = request( "http://some.url.1/" ); 
+    var p2 = request( "http://some.url.2/" );
+    
+    Promise.all( [p1,p2] )
+    .then( function(msgs){
+        // both `p1` and `p2` fulfill and pass in 
+        // their messages here
+        return request("http://some.url.3/?v=" + msgs.join(",") );
+    })
+    .then( function(msg){
+        console.log( msg ); } 
+    )
+--Promise.race([ .. ]):
+    > Promise.race([ .. ]) also expects a single array argument, containing one or more Promises, thenables, or immediate values.    
+    > Promise.race([ .. ]) will fulfill if and when any Promise resolution is a fulfillment, and it will reject if and when any Promise resolution is a rejection
+    > A "race" requires at least one "runner," 
+    > metaphor of "only the first across the finish line wins"
+    > callback resolve gets single message instead of array 
+    ex:
+    // `request(..)` is a Promise-aware Ajax utility, 
+    // like we defined earlier in the chapter
+    var p1 = request( "http://some.url.1/" ); 
+    var p2 = request( "http://some.url.2/" );
+    Promise.race( [p1,p2] ) 
+    .then( function(msg){
+        // either `p1` or `p2` will win the race
+        return request( "http://some.url.3/?v=" + msg); 
+    })
+    .then( function(msg){ 
+        console.log( msg );
+    });
+
+--Timeout Race:
+    if process not done in certain time reject promise instead of waiting for long
+    ex:
+     Promise.race( [ 
+        foo(),
+        timeoutPromise( 3000 )
+    ]) 
+    .then(
+        // attempt `foo()` // give it 3 seconds
+        function(){
+            // `foo(..)` fulfilled in time!
+        }, function(err){
+            // either `foo()` rejected, or it just // didn't finish in time, so inspect // `err` to know which
+        } 
+    );
+
+--Finally:
+    > In prev timout race ex if promise is timeout/ignroed how to make resouces collect by GC. finally() is suggested by devs in ES7 it might land.
+    > finally could retur promise to chain
+
+    ex:
+    var p = Promise.resolve( 42 );
+    p.then( something ) 
+    .finally( cleanup ) 
+    .then( another ) 
+    .finally( cleanup );
+
+--Variations on all([ .. ]) and race([ .. ]):
+    > none([ .. ]): when all promises are rejected
+    > any([ .. ])  only one need to be fullfilled
+    > first([ .. ])  only first resolved
+    > last([..]) only last resolved
+
+    ex: first implementation
+    // polyfill-safe guard check
+    if (!Promise.first) { 
+        Promise.first = function(prs) {
+        return new Promise( function(resolve,reject){ 
+            // loop through all promises 
+            prs.forEach( function(pr){
+                // normalize the value
+                Promise.resolve( pr )
+                // whichever one fulfills first wins, and // gets to resolve the main promise .then( resolve );
+            } ); 
+        } );
+        }; 
+    }
+-- Concurrent Iterations:
+    > Iterating and performing operation like some(), map(), forEach(), every() on map
+
+.. page 68
 
