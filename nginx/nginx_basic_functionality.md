@@ -507,3 +507,105 @@ location /app3/ {
     proxy_pass http://example.com/app3/;
 }
 ```
+## Web content cache [PENDING]
+Regarding how to enable and catch responses from proxied server.
+#### Introduction
+When caching is enabled, NGINX Plus saves responses in a disk cache and uses them to respond to clients without having to proxy requests for the same content every time.
+
+#### Enabling the Caching of Responses
+To enable cache use **proxy_cache_path** directive in top level http context. It takes two params
+* _path_: path to local system 
+* _keys_zone_: defines name and size of shared
+
+Then include **proxy_cache** in context (protocol type, virtual server, location) where you want server repsonse to be cached.
+```$xslt
+http {
+    ...
+    proxy_cache_path /data/nginx/cache keys_zone=one:10m;
+
+    server {
+        proxy_cache one;
+        location / {
+            proxy_pass http://localhost:8000;
+        }
+    }
+}
+```
+Cached responses are stored on the disk with the metadata under file system. _max_size_ can be used to limit the amount of cached response data.
+
+#### NGINX Processes Involved in Caching
+Two process related with caching
+* _The cache manager_: activates periodically and monitors size of cached. If size exceeds then it removes least recently accessed cache.
+* _ cache loader_: It runs only when Nginx starts. It does cause dealay in starting Nginx server. To address this performance at start additional value can be send to proxy_cache_path.
+    * _loader_threshold_: Duration of an iteration, in milliseconds defaul 200
+    * _loader_files_:Maximum number of items loaded during one iteration default 100
+    * _loader_sleeps_: Delay between iterations in ms default 50
+    
+```$xslt
+proxy_cache_path /data/nginx/cache keys_zone=one:10m loader_threshold=300 loader_files=200;
+```
+
+#### Specifying Which Requests to Cache
+By default, NGINX Plus caches all responses to requests made with the HTTP GET and HEAD methods the first time such responses are received from a proxied server.  If a request has the same key as a cached response, NGINX Plus sends the cached response to the client. You can include various directives in the http, server, or location context to control which responses are cached.
+
+Following are directives to control that behaviour
+```$xslt
+proxy_cache_key "$host$request_uri$cookie_user";
+proxy_cache_min_uses 5;
+proxy_cache_methods GET HEAD POST;
+```
+#### Limiting or Bypassing Caching
+To limit how long cached responses with specific status codes are considered valid, include the proxy_cache_valid directive
+```$xslt
+# cache valid for 200 and 302 response for 10m
+proxy_cache_valid 200 302 10m;
+proxy_cache_valid 404      1m;
+
+# any response code 
+proxy_cache_valid any 5m;
+```
+To bypass cached or no cache
+```$xslt
+proxy_cache_bypass $cookie_nocache $arg_nocache$arg_comment;
+proxy_no_cache $http_pragma $http_authorization;
+```
+#### Purging Content From The Cache
+To remove outdated cache. The cache is purged upon receiving a special “purge” request.
+##### Configuring Cache Purge
+Let’s set up a configuration that identifies requests that use the “PURGE” HTTP method and deletes matching URLs.
+1. On the http level, create a new variable, for example, $purge_method, that will depend on the $request_method variable:
+```
+http {
+    ...
+    map $request_method $purge_method {
+        PURGE 1;
+        default 0;
+    }
+}
+```
+2.  location where caching is configured, include the proxy_cache_purge directive that will specify a condition of a cache purge request.
+
+```$xslt
+server {
+    listen      80;
+    server_name www.example.com;
+
+    location / {
+        proxy_pass  https://localhost:8002;
+        proxy_cache mycache;
+
+        proxy_cache_purge $purge_method;
+    }
+}
+```
+
+##### Sending the Purge Command
+ You can issue purge requests using a range of tools, for example, the curl command:
+ ```$xslt
+ curl -X PURGE -D – "https://www.example.com/*"
+```
+
+
+
+
+
