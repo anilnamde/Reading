@@ -458,10 +458,166 @@ function home_space
 
 ## Flow Control - Part 1
 
+Commands to controls the flow,
+#### if    
+it makes a decision based on the exit status of a command. 
+```aidl
+if commands; then
+commands
+[elif commands; then    
+commands...]
+[else
+commands]
+fi
+```
+#### test:  
+When command terminates it return int value that is Exit Status. _0_ is success and non zero is failure.
+```aidl
+# $? returns exit code of last executed command
+$ ls -d /usr/bin
+/usr/bin
+$ echo $?
+0
+$ ls -d /bin/usr
+ls: cannot access /bin/usr: No such file or directory
+$ echo $?
+2
+```
 
+_true_ and _false_ also returns exit code
+```aidl
+$ true
+$ echo $?
+0
+$ false
+$ echo $?
+1
 
+ex: 
+$ if true; then echo "It's true."; fi
+```
 
+#### test  
+The test command is used most often with the if command to perform true/false decisions. It has two forms,
 
+```aidl
+# First form
+
+test expression
+
+# Second form
+# space between [, ] and expression is required
+[ expression ]
+```
+Example: 
+
+```aidl
+# -f check if .bash_profile is a file
+if [ -f .bash_profile ]; then
+    echo "You have a .bash_profile. Things are fine."
+else
+    echo "Yikes! You have no .bash_profile!"
+fi
+```
+
+Expression | Description
+----------- | ----------------
+-d _file_| True if file is a directory.
+-e _file_|  True if file exists.
+-f _file_|True if file exists and is a regular file.
+-L _file_|True if file is a symbolic link.
+-r _file_|True if file is a file readable by you.
+-w _file_|True if file is a file writable by you.
+-x _file_|True if file is a file executable by you.
+file1 -nt file2|True if file1 is newer than (according to modification time) file2
+file1 -ot file2|True if file1 is older than file2
+-z _string_|True if string is empty.
+-n _string_|True if string is not empty.
+string1 = string2|True if string1 equals string2.
+string1 != string2|True if string1 does not equal string2.
+
+#### Semicolon
+The semicolon is a command separator. Using it allows you to put more than one command on a line
+```aidl
+$ clear; ls
+```
+
+#### exit
+_exit_ command sets exit status when script finishes. 
+```aidl
+exit 0;
+exit 1;
+```
+
+example: Testing root user  
+_>&2_  is used in below script to redirect error to standard error instead of standart output which is console
+```aidl
+# id -u command is used for getting user id if its 0 then its root user
+if [ $(id -u) = "0" ]; then
+    echo "superuser"
+fi
+
+if [ $(id -u) != "0" ]; then
+    echo "You must be the superuser to run this script" >&2
+    exit 1
+fi
+```
+
+example: so with new understanding example to print home space is as follows
+```aidl
+function home_space
+{
+    # Only the superuser can get this information
+
+    if [ "$(id -u)" = "0" ]; then
+        echo "<h2>Home directory space by user</h2>"
+        echo "<pre>"
+        echo "Bytes Directory"
+            du -s /home/* | sort -nr
+        echo "</pre>"
+    fi
+
+}   # end of home_space
+  
+```
+
+# Stay Out Of Trouble
+
+#### Common issues
+* _empty variables_: in case variable is not initialized
+    ```aidl
+    number=
+    ```
+* Missing quotes: 
+    ```
+    str="something... 
+    ```
+
+#### Isolating problem
+* _comments_: comment block of code to narrow issue
+* _use echo_: to print where exactly script is and also to print variables and calculations.
+* _trace_:    
+trace can be enabled by adding -x in shebang for bash script
+    ```aidl
+    #!/bin/bash -x
+    ```
+    
+    Trace can be turned on and off for a block so code using _set -x_ _set +x_ below  
+    ```aidl
+    #!/bin/bash
+    
+    number=1
+    
+    set -x
+    if [ $number = "1" ]; then
+        echo "Number equals 1"
+    else
+        echo "Number does not equal 1"
+    fi
+    set +x
+    ```
+
+## Keyboard Input And Arithmetic
 
 
 
