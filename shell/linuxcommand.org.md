@@ -618,6 +618,205 @@ trace can be enabled by adding -x in shebang for bash script
     ```
 
 ## Keyboard Input And Arithmetic
+#### read
+-n with echo ensure to keep the cursor on the same line.  
+read can take two flags  
+_-t [n]_ to timeout if user does not enter input.  
+_-s_ is silent mode input chars will not be visible  
+```aidl
+#!/bin/bash
+
+echo -n "Enter some text > "
+read text
+echo "You entered: $text"
+```
+
+```aidl
+#!/bin/bash
+
+echo -n "Hurry up and type something! > "
+if read -t 3 response; then
+    echo "Great, you made it in time!"
+else
+    echo "Sorry, you are too slow!"
+fi
+```
+
+#### Arithmetic
+note double _()_ around number shell with these perform arithmatic operation
+```
+$ echo $((2+2))
+```
+> Note: variables not referred with _$_ when used in arithmatic  
+>
+```aidl
+#!/bin/bash
+
+first_num=0
+second_num=0
+
+echo -n "Enter the first number --> "
+read first_num
+echo -n "Enter the second number -> "
+read second_num
+
+echo "first number + second number = $((first_num + second_num))"
+echo "first number - second number = $((first_num - second_num))"
+echo "first number * second number = $((first_num * second_num))"
+echo "first number / second number = $((first_num / second_num))"
+echo "first number % second number = $((first_num % second_num))"
+echo "first number raised to the"
+echo "power of the second number   = $((first_num ** second_num))"
+```
+
+Following is example to assign to arithmetic calculation
+```aidl
+#!/bin/bash
+
+seconds=0
+
+echo -n "Enter number of seconds > "
+read seconds
+
+hours=$((seconds / 3600))
+seconds=$((seconds % 3600))
+minutes=$((seconds / 60))
+seconds=$((seconds % 60))
+
+echo "$hours hour(s) $minutes minute(s) $seconds second(s)"
+```
+## Flow Control - Part 2
+#### Case
+patterns: chould be string, wildcard. Multiple patterns can be matched with _|_ 
+```aidl
+case word in
+    patterns ) commands ;;
+esac
+```
+
+ex:
+```aidl
+#!/bin/bash
+
+echo -n "Enter a number between 1 and 3 inclusive > "
+read character
+case $character in
+    1 ) echo "You entered one."
+        ;;
+    2 ) echo "You entered two."
+        ;;
+    3 ) echo "You entered three."
+        ;;
+    * ) echo "You did not enter a number between 1 and 3."
+esac
+```
+
+ex:
+```aidl
+#!/bin/bash
+
+echo -n "Type a digit or a letter > "
+read character
+case $character in
+                                # Check for letters
+    [[:lower:]] | [[:upper:]] ) echo "You typed the letter $character"
+                                ;;
+
+                                # Check for digits
+    [0-9] )                     echo "You typed the digit $character"
+                                ;;
+
+                                # Check for anything else
+    * )                         echo "You did not type a letter or a digit"
+esac
+```
+
+#### Loop 
+##### While
+```aidl
+#!/bin/bash
+
+number=0
+while [ "$number" -lt 10 ]; do
+    echo "Number = $number"
+    number=$((number + 1))
+done
+```
+
+##### Until
+```
+#!/bin/bash
+
+number=0
+until [ "$number" -ge 10 ]; do
+    echo "Number = $number"
+    number=$((number + 1))
+done
+
+```
+#### for
 
 
+
+## Example menu
+```aidl
+#!/bin/bash
+
+press_enter()
+{
+    echo -en "\nPress Enter to continue"
+    read
+    clear
+}
+
+selection=
+until [ "$selection" = "0" ]; do
+    echo "
+    PROGRAM MENU
+    1 - display free disk space
+    2 - display free memory
+
+    0 - exit program
+"
+    echo -n "Enter selection: "
+    read selection
+    echo ""
+    case $selection in
+        1 ) df ; press_enter ;;
+        2 ) free ; press_enter ;;
+        0 ) exit ;;
+        * ) echo "Please enter 1, 2, or 0"; press_enter
+    esac
+done
+```
+
+## Positional param
+$[n]: returns nth param to shell  
+$#: returns number of the command life param 
+```aidl
+$ command.sh one two three .. 
+$0: command.sh
+$1: one
+$2: two
+..
+```
+## Shift
+_Shift_ command moves the command positional param to left one at a time
+
+```
+#!/bin/bash
+
+echo "You start with $# positional parameters"
+
+# Loop until all parameters are used up
+while [ "$1" != "" ]; do
+    echo "Parameter 1 equals $1"
+    echo "You now have $# positional parameters"
+
+    # Shift all the parameters down by one
+    shift
+
+done
+
+```
 
