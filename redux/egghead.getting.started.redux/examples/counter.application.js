@@ -1,4 +1,4 @@
-const counter = require('./counter')
+const counter = require('./counter');
 // to create store for client application which can subscribe, dispact action and also returns state
 const createStore = require('redux').createStore;
 
