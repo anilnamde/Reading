@@ -59,7 +59,7 @@ function Reducer(previousState, action){
 
 
 ## Reducer for simple counter example [#5]
-[counter example](www.google.com)
+[counter example counter.js](www.google.com)
 
 ```javascript
 module.exports = function counter(state, action){
@@ -71,7 +71,7 @@ module.exports = function counter(state, action){
 ```
  
 ## Redux Application: Store Methods: getState(), dispatch(), and subscribe() [#6]
-[application example consuming counter]()
+[application example consuming counter.application.js]()
 ```javascript
 const counter = require('./counter');
 // to create store for client application which can subscribe,
@@ -92,19 +92,79 @@ counterStore.dispatch({ type: 'INCREMENT'})
 ```
 
 ## Implementing store from scratch
+[example simpleStore.js]()
 
 ```javascript
-const 
+ module.exports = function simpleStore(reducer){
+   let state;
+   let listeners = [];
+   const getState = () => state;
+ 
+   const dispatch = (action) => {
+     state = reducer(state, action);
+     listeners.forEach(listener => listener())
+   };
+ 
+   const subscribe = (listener) => {
+     listeners.push(listener);
+     return () => {
+       listeners = listeners.filter( l => l !== listener);
+     }
+   };
+ 
+   dispatch({});
+ 
+   return {getState, dispatch, subscribe};
+ };
+```
+## React Counter Example
+[example react.store.js]()
+
+```javascript
+const counterReduceer = require('./counter');
+const { createStore } = require('redux');
+
+const counterStore = createStore(counterReduceer);
+
+const Counter = ({ value, onIncrement, onDecrement}) =>{
+  return (<div>
+      <h1>{value}</h1>
+      <button onClick={onIncrement}>+</button>
+      <button onClick={onDecrement}>-</button>
+    </div>);
+};
+
+const render = () => {
+  ReactDOM.render(
+    <Counter
+      value={counterStore.getState()
+      onIncrement={()=> {
+        counterStore.despatch({type: 'INCREMENT'})
+      }}
+      onDecrement={() => {
+        counterStore.despatch({type: 'DECREMENT'})
+      }}
+    }/>,
+    document.getElementById('root')
+  );
+};
+
+counterStore.subscribe(render);
+render();
+
 ```
 
-Redux: The Single Immutable State Tree   
-Redux: Describing State Changes with Actions  
-Redux: Pure and Impure Functions  
-Redux: The Reducer Function  
-Redux: Writing a Counter Reducer with Tests  
-Redux: Store Methods: getState(), dispatch(), and subscribe()  
-Redux: Implementing Store from Scratch  
-Redux: React Counter Example  
+##  Avoiding Array Mutations with concat(), slice(), and ...spread
+
+
+    Redux: The Single Immutable State Tree   
+    Redux: Describing State Changes with Actions  
+    Redux: Pure and Impure Functions  
+    Redux: The Reducer Function  
+    Redux: Writing a Counter Reducer with Tests  
+    Redux: Store Methods: getState(), dispatch(), and subscribe()  
+    Redux: Implementing Store from Scratch  
+    Redux: React Counter Example  
 Redux: Avoiding Array Mutations with concat(), slice(), and ...spread  
 Redux: Avoiding Object Mutations with Object.assign() and ...spread  
 Redux: Writing a Todo List Reducer (Adding a Todo)  
