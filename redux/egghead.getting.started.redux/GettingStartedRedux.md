@@ -155,7 +155,28 @@ render();
 ```
 
 ##  Avoiding Array Mutations with concat(), slice(), and ...spread
+### concat()
 
+```javascript
+function add(array, value) {
+  // return array.concat(array, value);
+  return [...array, value];
+}
+```
+### slice()
+ 
+```javascript
+function remove(array, index) {
+  return [...array.slice(0, index), ...array.slice(index + 1)];
+}
+
+```
+### spread
+```
+function increment(array, index) {
+  return [...array.slice(0, index), array[index] + 1,...array.slice(index + 1)];
+}
+```
 
     Redux: The Single Immutable State Tree   
     Redux: Describing State Changes with Actions  
@@ -165,7 +186,7 @@ render();
     Redux: Store Methods: getState(), dispatch(), and subscribe()  
     Redux: Implementing Store from Scratch  
     Redux: React Counter Example  
-Redux: Avoiding Array Mutations with concat(), slice(), and ...spread  
+    Redux: Avoiding Array Mutations with concat(), slice(), and ...spread  
 Redux: Avoiding Object Mutations with Object.assign() and ...spread  
 Redux: Writing a Todo List Reducer (Adding a Todo)  
 Redux: Writing a Todo List Reducer (Toggling a Todo)  

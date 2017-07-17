@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "deep-freeze": "0.0.1",
     "jest": "^20.0.4",
     "redux": "^3.7.2"
   }
