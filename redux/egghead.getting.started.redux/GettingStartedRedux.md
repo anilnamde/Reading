@@ -172,11 +172,41 @@ function remove(array, index) {
 
 ```
 ### spread
-```
+```javascript
 function increment(array, index) {
   return [...array.slice(0, index), array[index] + 1,...array.slice(index + 1)];
 }
 ```
+##  Avoiding Object Mutations ... assign, spread
+### Object assign
+
+```javascript
+module.exports = {
+  toggleTodo(todo){
+    return Object.assign({}, todo, {
+      complete: !todo.complete,
+    })
+  },
+  // es7
+  // toggleTodoSpread(todo){
+  //   return {
+  //     ...todo,
+  //     complete: !todo.complete,
+  //   };
+  // }
+};
+```
+
+
+  
+  
+
+
+
+
+
+
+
 
     Redux: The Single Immutable State Tree   
     Redux: Describing State Changes with Actions  
