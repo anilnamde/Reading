@@ -197,8 +197,37 @@ module.exports = {
 };
 ```
 
+## Redux: Writing a Todo List Reducer
+### (Adding a Todo) 
+```javascript
+module.exports = (state = [], action) => {
+  switch (action.type) {
+    case 'ADD':
+      return [...state, {
+        id: action.id,
+        text: action.text,
+        completed: false,
+      }]
+  }
+}
 
-  
+```
+### (Toggling a Todo)
+```javascript
+module.exports = (state = [], action) => {
+  switch (action.type) {
+    case 'TOGGLE':
+      return state.map(item => {
+        if(item.id !== action.id)
+          return item;
+
+        return Object.assign({}, item, {
+          completed: !item.completed,
+        })
+      })
+  }
+}
+```
   
 
 
@@ -217,9 +246,9 @@ module.exports = {
     Redux: Implementing Store from Scratch  
     Redux: React Counter Example  
     Redux: Avoiding Array Mutations with concat(), slice(), and ...spread  
-Redux: Avoiding Object Mutations with Object.assign() and ...spread  
-Redux: Writing a Todo List Reducer (Adding a Todo)  
-Redux: Writing a Todo List Reducer (Toggling a Todo)  
+    Redux: Avoiding Object Mutations with Object.assign() and ...spread  
+    Redux: Writing a Todo List Reducer (Adding a Todo)  
+    Redux: Writing a Todo List Reducer (Toggling a Todo)  
 Redux: Reducer Composition with Arrays  
 Redux: Reducer Composition with Objects  
 Redux: Reducer Composition with combineReducers()  
