@@ -228,7 +228,9 @@ module.exports = (state = [], action) => {
   }
 }
 ```
-  
+## Redux: Reducer Composition with Arrays
+Idea is that reducer can contain other reducers which would be responsible to take care of part of the state in the application. This way reducer becomes managable in a big state tree.
+
 
 
 
@@ -249,7 +251,7 @@ module.exports = (state = [], action) => {
     Redux: Avoiding Object Mutations with Object.assign() and ...spread  
     Redux: Writing a Todo List Reducer (Adding a Todo)  
     Redux: Writing a Todo List Reducer (Toggling a Todo)  
-Redux: Reducer Composition with Arrays  
+    Redux: Reducer Composition with Arrays  
 Redux: Reducer Composition with Objects  
 Redux: Reducer Composition with combineReducers()  
 Redux: Implementing combineReducers() from Scratch  
