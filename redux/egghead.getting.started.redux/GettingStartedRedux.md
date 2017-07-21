@@ -252,7 +252,7 @@ Idea is that reducer can contain other reducers which would be responsible to ta
     Redux: Writing a Todo List Reducer (Adding a Todo)  
     Redux: Writing a Todo List Reducer (Toggling a Todo)  
     Redux: Reducer Composition with Arrays  
-Redux: Reducer Composition with Objects  
+Redux: Reducer Composition with Objects
 Redux: Reducer Composition with combineReducers()  
 Redux: Implementing combineReducers() from Scratch  
 Redux: React Todo List Example (Adding a Todo)  
