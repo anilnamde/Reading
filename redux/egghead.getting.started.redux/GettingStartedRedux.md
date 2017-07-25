@@ -302,37 +302,46 @@ const todoAppReducer = combineReducers({
 
 ```
 ## Redux: Implementing combineReducers() from Scratch  
+Reducer function from scratch to undestand how it works
 
+```javascript
+const customeCombineReducers =  (reducers) =>{
+  return (state = {}, action) => {
+    return Object
+      .keys(reducers)
+      .reduce((nextState, reducer) => {
+        nextState[reducer] = reducers[reducer](
+          state[reducer],
+          action
+        );
+        return nextState;
+      }, {})
+  }
+};
+
+``` 
  
- 
+## Redux: React Todo List Example
+### Adding a todo
 
+### Toggling a Todo
 
+### Filtering Todos
 
+## Redux: Extracting Presentational Components
+### Todo, TodoList
+### AddTodo, Footer, FilterLink
 
+## Redux: Extracting Container Components
+### FilterLink
+### VisibleTodoList, AddTodo
 
+## Redux: Passing the Store Down Explicitly via Props  
+## Redux: Passing the Store Down Implicitly via Context  
+## Redux: Passing the Store Down with <Provider> from React Redux  
 
-
-
-
-
-Redux: Implementing combineReducers() from Scratch  
-
-Redux: React Todo List Example (Adding a Todo)  
-Redux: React Todo List Example (Toggling a Todo)  
-Redux: React Todo List Example (Filtering Todos)  
-
-Redux: Extracting Presentational Components (Todo, TodoList)  
-Redux: Extracting Presentational Components (AddTodo, Footer, FilterLink)  
-Redux: Extracting Container Components (FilterLink)  
-Redux: Extracting Container Components (VisibleTodoList, AddTodo)  
-
-Redux: Passing the Store Down Explicitly via Props  
-Redux: Passing the Store Down Implicitly via Context  
-Redux: Passing the Store Down with <Provider> from React Redux  
-
-Redux: Generating Containers with connect() from React Redux (VisibleTodoList)  
-Redux: Generating Containers with connect() from React Redux (AddTodo)  
-Redux: Generating Containers with connect() from React Redux (FooterLink)  
-
-Redux: Extracting Action Creators  
+## Redux: Generating Containers with connect() from React Redux (VisibleTodoList)  
+## Redux: Generating Containers with connect() from React Redux (AddTodo)  
+## Redux: Generating Containers with connect() from React Redux (FooterLink)  
+## Redux: Extracting Action Creators  
 
