@@ -231,6 +231,80 @@ module.exports = (state = [], action) => {
 ## Redux: Reducer Composition with Arrays
 Idea is that reducer can contain other reducers which would be responsible to take care of part of the state in the application. This way reducer becomes managable in a big state tree.
 
+```javascript
+function todo(state, action) {
+  switch (action.type) {
+    case 'ADD':
+      return {
+        id: action.id,
+        text: action.text,
+        completed: false,
+      }
+    case 'TOGGLE':
+
+      if (state.id !== action.id)
+        return state;
+
+      return Object.assign({}, state, {
+        completed: !state.completed,
+      });
+    default:
+      return state;
+  }
+}
+
+function todos(state = [], action) {
+  switch (action.type) {
+    case 'ADD':
+      return [...state, todo(undefined, action)]
+    case 'TOGGLE':
+      return state.map(statex => todo(statex, action));
+  }
+}
+```
+
+## Redux: Reducer Composition with Objects
+By combining such composition reducer entire apps reducer can be managed with small chunks at a time.
+
+```javascript
+const todos = require('./todo.list.reducer.composition.array').todos;
+
+const visibilityFilter = (state, action) => {
+  switch(action.type){
+    case 'SET_VISIBILITY_FILTER':
+      return action.filter;
+    default:
+      return state;
+  }
+  return state;
+};
+
+
+const todoApp = (state = {}, action) => {
+  return {
+    todos: todos(state.todos, action),
+    visibilityFilter: visibilityFilter( state.visibilityFilter, action)
+  }
+}
+```
+## Redux: Reducer Composition with combineReducers()
+Composition reducer is common pattern hence redux provide method called as _combineReducers_ to get app reducer. It just need reducers with same name as the state and that's it. It creates reducer function for each state key automatically.
+
+```javascript
+const combineReducers = require('redux').combineReducers;
+const todos = require('./todo.list.reducer.composition.array')
+const visibilityFilter = require('./todo.list.reducer.composition.object').visibilityFilter;
+
+const todoAppReducer = combineReducers({
+  todos,
+  visibilityFilter
+});
+
+```
+## Redux: Implementing combineReducers() from Scratch  
+
+ 
+ 
 
 
 
@@ -239,34 +313,26 @@ Idea is that reducer can contain other reducers which would be responsible to ta
 
 
 
-    Redux: The Single Immutable State Tree   
-    Redux: Describing State Changes with Actions  
-    Redux: Pure and Impure Functions  
-    Redux: The Reducer Function  
-    Redux: Writing a Counter Reducer with Tests  
-    Redux: Store Methods: getState(), dispatch(), and subscribe()  
-    Redux: Implementing Store from Scratch  
-    Redux: React Counter Example  
-    Redux: Avoiding Array Mutations with concat(), slice(), and ...spread  
-    Redux: Avoiding Object Mutations with Object.assign() and ...spread  
-    Redux: Writing a Todo List Reducer (Adding a Todo)  
-    Redux: Writing a Todo List Reducer (Toggling a Todo)  
-    Redux: Reducer Composition with Arrays  
-Redux: Reducer Composition with Objects
-Redux: Reducer Composition with combineReducers()  
+
+
 Redux: Implementing combineReducers() from Scratch  
+
 Redux: React Todo List Example (Adding a Todo)  
 Redux: React Todo List Example (Toggling a Todo)  
 Redux: React Todo List Example (Filtering Todos)  
+
 Redux: Extracting Presentational Components (Todo, TodoList)  
 Redux: Extracting Presentational Components (AddTodo, Footer, FilterLink)  
 Redux: Extracting Container Components (FilterLink)  
 Redux: Extracting Container Components (VisibleTodoList, AddTodo)  
+
 Redux: Passing the Store Down Explicitly via Props  
 Redux: Passing the Store Down Implicitly via Context  
 Redux: Passing the Store Down with <Provider> from React Redux  
+
 Redux: Generating Containers with connect() from React Redux (VisibleTodoList)  
 Redux: Generating Containers with connect() from React Redux (AddTodo)  
 Redux: Generating Containers with connect() from React Redux (FooterLink)  
+
 Redux: Extracting Action Creators  
 
