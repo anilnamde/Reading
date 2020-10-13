@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "puppeteer": "^0.13.0"
+    "puppeteer": "^1.13.0"
   }
 }
